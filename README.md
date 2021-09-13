@@ -1,25 +1,24 @@
 
 # PreventingViolentExtremismEvidenceReview
 
-<!-- badges: start -->
-<!-- badges: end -->
+The Report:
 
-The goal of PreventingViolentExtremismEvidenceReview is to ...
+[Preventing Violent Extremism Evidence Review](
+https://docs.google.com/document/d/115g4djGLrBjJDZOux1TADgJnO-W44YiuUOuphtn0t_I/edit#)
 
-## Installation
 
-You can install the released version of PreventingViolentExtremismEvidenceReview from [CRAN](https://CRAN.R-project.org) with:
+The Authors:
 
-``` r
-install.packages("PreventingViolentExtremismEvidenceReview")
-```
+  - [Dr. Laurent Van Metre]
+  - [Dr. Thomas Leo Scherer]
+  - [Analise Schmidt]
 
-## Example
+## Replication Code and Analysis
 
-This is a basic example which shows you how to solve a common problem:
+  - [Overview](https://tlscherer.github.io/PreventingViolentExtremismEvidenceReview/Overview.html)
 
-``` r
-library(PreventingViolentExtremismEvidenceReview)
-## basic example code
-```
 
+### Datasets
+
+  - [Literature Datasheet](https://github.com/tlscherer.github.io/PreventingViolentExtremismEvidenceReview/raw/master/data/literature_datasheet.xlsx)
+  - [Litertaure Codebook](https://docs.google.com/document/d/1veDsKMscq0yUXlpB9NHZInKJZIOSnzgqteJx5_8s4PE/edit)
