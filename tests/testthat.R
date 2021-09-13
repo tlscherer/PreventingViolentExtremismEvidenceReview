@@ -1,0 +1,4 @@
+library(testthat)
+library(PreventingViolentExtremismEvidenceReview)
+
+test_check("PreventingViolentExtremismEvidenceReview")

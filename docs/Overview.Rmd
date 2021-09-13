@@ -1,0 +1,38 @@
+---
+title: "Youth"
+author: "Thomas Scherer"
+date: "September 13, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+target_file <- paste0(here::here(),"/data/literature_datasheet.xlsx")
+downloaded_file <- googledrive::drive_download(file="https://docs.google.com/spreadsheets/d/1VUqxkCno5NEKIIYLuqgXOEbJNo6Mi9Rl4MKO2_Pj_yg/edit#gid=0", path=target_file, type = "xlsx", overwrite=T)
+datasheet_youth  <- readxl::read_excel(target_file, sheet="Youth")
+
+```
+
+```{r}
+
+DT <- table(datasheet_youth$`Data Transparency`)
+
+barplot(DT, main="Data Transparency",
+   xlab="rating")
+
+
+```
+
+```{r}
+# ggplot(datasheet_youth, aes(x="Data Transparency", y=value)) + 
+#   geom_bar(stat = "identity")
+```
+
