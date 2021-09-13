@@ -1,9 +1,7 @@
 
 # PreventingViolentExtremismEvidenceReview
 
-The Report:
-
-[Preventing Violent Extremism Evidence Review](
+The Report: [Preventing Violent Extremism Evidence Review](
 https://docs.google.com/document/d/115g4djGLrBjJDZOux1TADgJnO-W44YiuUOuphtn0t_I/edit#)
 
 
