@@ -91,5 +91,17 @@ transposed %>%
   kableExtra::scroll_box(width = "100%", height = "200px")
 ```
 
+```{r}
+cols.num <- c("0.0", "1.0", "2.0", "3.0", "missing")
+transposed[cols.num] <- sapply(transposed[cols.num],as.numeric)
+```
+
+
+```{r}
+transposed %>% dplyr::select(-missing) %>% 
+  janitor::adorn_percentages(denominator="row") %>% janitor::adorn_pct_formatting() %>% 
+  kableExtra::kable() %>% kableExtra::kable_styling(full_width = F) %>%
+  kableExtra::scroll_box(width = "100%", height = "500px", fixed_thead = T)
+```
 
 
