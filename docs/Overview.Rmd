@@ -23,8 +23,8 @@ downloaded_file <- googledrive::drive_download(file="https://docs.google.com/spr
 datasheet_youth  <- readxl::read_excel(target_file, sheet="Youth") %>%
   janitor::clean_names() %>%
   dplyr::mutate(temp = NULL) %>%
-  janitor::remove_empty_rows() %>%
-  janitor::remove_empty_cols() %>%
+ # janitor::remove_empty_rows() %>%
+#  janitor::remove_empty_cols() %>%
   dplyr::mutate_all(as.character)
 
 ```
