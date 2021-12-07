@@ -1,0 +1,337 @@
+---
+title: "cross-topic"
+author: "Thomas Scherer"
+date: "September 13, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(magrittr)
+```
+
+
+```{r}
+target_file <- paste0(here::here(),"/data/literature_datasheet.xlsx")
+
+downloaded_file <- googledrive::drive_download(file="https://docs.google.com/spreadsheets/d/1VUqxkCno5NEKIIYLuqgXOEbJNo6Mi9Rl4MKO2_Pj_yg/edit#gid=0", path=target_file, type = "xlsx", overwrite=T)
+
+datasheet_youth  <- readxl::read_excel(target_file, sheet="Youth") %>%
+  janitor::clean_names() %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
+  dplyr::mutate(temp = NULL) %>%
+  janitor::remove_empty() %>%
+  dplyr::mutate(dplyr::across(where(is.character), stringr::str_trim)) %>% 
+  dplyr::mutate(dplyr::across(where(is.character), tolower)) %>% 
+  dplyr::mutate_at(c("explanatory_variable_actionability", "explanatory_variable_proximity", "explained_variable_relevance", "data_transparency", "explanatory_power", "policy_and_practice_cogency", "research_framing", "reproducibility", "ethical_considerations"), as.numeric) %>% 
+  dplyr::rename(explanatory_proximity = explanatory_variable_proximity, 
+                explanatory_actionability = explanatory_variable_actionability, 
+                explained_relevance = explained_variable_relevance,
+                program_discussion = policy_and_practice_cogency, 
+                research_discussion = research_framing)
+
+
+datasheet_gender  <- readxl::read_excel(target_file, sheet="Gender") %>%
+  janitor::clean_names() %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
+  dplyr::mutate(temp = NULL) %>%
+  janitor::remove_empty() %>%
+  dplyr::mutate(dplyr::across(where(is.character), stringr::str_trim)) %>% 
+  dplyr::mutate(dplyr::across(where(is.character), tolower)) %>% 
+  dplyr::mutate_at(c("explanatory_variable_actionability", "explanatory_variable_proximity", "explained_variable_relevance", "data_transparency", "explanatory_power", "policy_and_practice_cogency", "research_framing", "reproducibility", "ethical_considerations"), as.numeric) %>% 
+  dplyr::rename(explanatory_proximity = explanatory_variable_proximity, 
+                explanatory_actionability = explanatory_variable_actionability, 
+                explained_relevance = explained_variable_relevance,
+                program_discussion = policy_and_practice_cogency, 
+                research_discussion = research_framing)
+
+datasheet_religion  <- readxl::read_excel(target_file, sheet="Religion") %>%
+  janitor::clean_names() %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
+  dplyr::mutate(temp = NULL) %>%
+  # janitor::remove_empty() %>%
+  dplyr::mutate(dplyr::across(where(is.character), stringr::str_trim)) %>%
+  dplyr::mutate(dplyr::across(where(is.character), tolower)) %>%
+  dplyr::mutate_at(c("explanatory_variable_actionability", "explanatory_variable_proximity", "explained_variable_relevance", "data_transparency", "explanatory_power", "policy_and_practice_cogency", "research_framing", "reproducibility", "ethical_considerations"), as.numeric) %>% 
+  dplyr::rename(explanatory_proximity = explanatory_variable_proximity, 
+                explanatory_actionability = explanatory_variable_actionability, 
+                explained_relevance = explained_variable_relevance,
+                program_discussion = policy_and_practice_cogency, 
+                research_discussion = research_framing)
+
+
+datasheet_community  <- readxl::read_excel(target_file, sheet="Community Resilience") %>%
+  janitor::clean_names() %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
+  dplyr::mutate(temp = NULL) %>%
+  # janitor::remove_empty() %>%
+  dplyr::mutate(dplyr::across(where(is.character), stringr::str_trim)) %>%
+  dplyr::mutate(dplyr::across(where(is.character), tolower)) %>%
+  dplyr::mutate_at(c("explanatory_variable_actionability", "explanatory_variable_proximity", "explained_variable_relevance", "data_transparency", "explanatory_power", "policy_and_practice_cogency", "research_framing", "reproducibility", "ethical_considerations"), as.numeric) %>% 
+  dplyr::rename(explanatory_proximity = explanatory_variable_proximity, 
+                explanatory_actionability = explanatory_variable_actionability, 
+                explained_relevance = explained_variable_relevance,
+                program_discussion = policy_and_practice_cogency, 
+                research_discussion = research_framing)
+
+
+```
+
+# Type Tally
+
+```{r}
+youth_types <- datasheet_youth %>% dplyr::count(type, sort=TRUE) %>% 
+  dplyr::rename(Youth = n)
+  
+gender_types <- datasheet_gender %>% dplyr::count(type, sort=TRUE) %>% 
+  dplyr::rename(Gender = n)
+
+religion_types <- datasheet_religion %>% dplyr::count(type, sort=TRUE) %>% 
+  dplyr::rename(Religion = n)
+
+community_types <- datasheet_community %>% dplyr::count(type, sort=TRUE) %>% 
+  dplyr::rename(Community = n)
+
+all_types <- youth_types %>% dplyr::full_join(gender_types) %>% dplyr::full_join(religion_types) %>% dplyr::full_join(community_types)
+    
+```
+
+
+```{r}
+all_types
+
+all_types %>% dplyr::select(type, Gender) %>% dplyr::filter(!is.na(Gender))
+
+```
+
+
+# Year Type plot
+
+```{r}
+theme_timecount <- dplyr::bind_rows(datasheet_youth %>% dplyr::mutate(theme="youth") %>% dplyr::select(year, theme),
+                 datasheet_gender %>% dplyr::mutate(theme="gender") %>% dplyr::select(year, theme),
+                 datasheet_religion %>% dplyr::mutate(theme="religion") %>% dplyr::select(year, theme),
+                 datasheet_community %>% dplyr::mutate(theme="community") %>% dplyr::select(year, theme)) %>%
+  dplyr::count(year, theme)
+  
+theme_timecount <- theme_timecount %>% dplyr::full_join(tidyr::expand_grid(theme = unique(theme_timecount$theme), year = unique(theme_timecount$year))) %>% 
+  dplyr::mutate(year=as.numeric(year)) %>% 
+  dplyr::filter(!(is.na(year)), !(is.na(theme))) %>% 
+  dplyr::mutate(n = ifelse(is.na(n), 0, n))
+
+ggplot(theme_timecount, aes(x=year, y=n, fill=theme)) + 
+    geom_area()
+
+```
+
+
+
+
+
+
+# Evidence Characteristics
+
+```{r}
+#Youth
+youth_primary <- datasheet_youth %>% dplyr::filter(type %in% c("research", "program evaluation"))
+
+youth_evidence <- dplyr::bind_rows(
+  data.frame(x="n", Youth=nrow(youth_primary)),
+  youth_primary %>% tidyr::gather(x, value, c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>%
+    dplyr::group_by(x) %>%
+    dplyr::tally(value > 2) %>%
+    dplyr::mutate(n=round(n / nrow(youth_primary), 2)) %>%
+    dplyr::rename(Youth = n))
+
+#Gender
+gender_primary <- datasheet_gender %>% dplyr::filter(type %in% c("research", "program evaluation"))
+
+gender_evidence <- dplyr::bind_rows(
+  data.frame(x="n", Gender=nrow(gender_primary)),
+  gender_primary %>% tidyr::gather(x, value, c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>%
+    dplyr::group_by(x) %>%
+    dplyr::tally(value > 2) %>%
+    dplyr::mutate(n=round(n / nrow(gender_primary), 2)) %>%
+    dplyr::rename(Gender = n))
+
+#Religion
+religion_primary <- datasheet_religion %>% dplyr::filter(type %in% c("research", "program evaluation"))
+
+religion_evidence <- dplyr::bind_rows(
+  data.frame(x="n", Religion=nrow(religion_primary)),
+  religion_primary %>% tidyr::gather(x, value, c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>%
+    dplyr::group_by(x) %>%
+    dplyr::tally(value > 2) %>%
+    dplyr::mutate(n=round(n / nrow(religion_primary), 2)) %>%
+    dplyr::rename(Religion = n))
+
+#community
+community_primary <- datasheet_community %>% dplyr::filter(type %in% c("research", "program evaluation"))
+
+community_evidence <- dplyr::bind_rows(
+  data.frame(x="n", Community=nrow(community_primary)),
+  community_primary %>% tidyr::gather(x, value, c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>%
+    dplyr::group_by(x) %>%
+    dplyr::tally(value > 2) %>%
+    dplyr::mutate(n=round(n / nrow(community_primary), 2)) %>%
+    dplyr::rename(Community = n))
+
+
+all_evidence <- youth_evidence %>% dplyr::full_join(gender_evidence) %>% dplyr::full_join(religion_evidence) %>% dplyr::full_join(community_evidence)
+
+```
+```{r}
+all_evidence
+```
+
+```{r}
+library(ggplot2)
+
+youth_long <- youth_primary %>% tidyr::pivot_longer(cols = c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>% 
+  dplyr::mutate(value = as.character(value)) %>%
+  dplyr::mutate(value = ifelse(is.na(value), "NA", value)) %>% 
+  dplyr::mutate(value = factor(value, levels=c("NA", "1", "2", "3"))) %>% 
+  dplyr::mutate(name = factor(name, levels=c("explanatory_actionability", "explanatory_proximity", "explained_relevance", "data_transparency", "explanatory_power", "program_discussion", "research_discussion", "reproducibility", "ethical_considerations"))) %>% 
+  dplyr::mutate(name = dplyr::recode(name, 
+                "explanatory_actionability" = "Explanatory Variable\nActionability",
+                "explanatory_proximity" = "Explanatory Variable\nProximity", 
+                "explained_relevance" = "Explained Variable\nRelevance", 
+                "data_transparency" = "Data Transparency", 
+                "explanatory_power" = "Explanatory Power", 
+                "program_discussion" = "Program Discussion", 
+                "research_discussion" = "Research\nDiscussion", 
+                "reproducibility" = "Reproducibility", 
+                "ethical_considerations" = "Ethical\nConsiderations")) 
+
+
+ggplot(youth_long, aes(x = name, fill = value)) +
+  geom_bar() +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5)) +
+  scale_fill_manual(values = c("#999999", "#F8766D", "#FFCC33", "#00BC59"), 
+                    name="Score") +
+  xlab("\nIndicator of Quality") + 
+  ylab("Number of documents\n")
+
+
+```
+
+
+```{r}
+library(ggplot2)
+
+gender_long <- gender_primary %>% tidyr::pivot_longer(cols = c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>% 
+  dplyr::mutate(value = as.character(value)) %>%
+  dplyr::mutate(value = ifelse(is.na(value), "NA", value)) %>% 
+  dplyr::mutate(value = factor(value, levels=c("NA", "1", "2", "3"))) %>% 
+  dplyr::mutate(name = factor(name, levels=c("explanatory_actionability", "explanatory_proximity", "explained_relevance", "data_transparency", "explanatory_power", "program_discussion", "research_discussion", "reproducibility", "ethical_considerations"))) %>% 
+  dplyr::mutate(name = dplyr::recode(name, 
+                "explanatory_actionability" = "Explanatory Variable\nActionability",
+                "explanatory_proximity" = "Explanatory Variable\nProximity", 
+                "explained_relevance" = "Explained Variable\nRelevance", 
+                "data_transparency" = "Data Transparency", 
+                "explanatory_power" = "Explanatory Power", 
+                "program_discussion" = "Program Discussion", 
+                "research_discussion" = "Research\nDiscussion", 
+                "reproducibility" = "Reproducibility", 
+                "ethical_considerations" = "Ethical\nConsiderations")) 
+
+
+ggplot(gender_long, aes(x = name, fill = value)) +
+  geom_bar() +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5)) +
+  scale_fill_manual(values = c("#999999", "#F8766D", "#FFCC33", "#00BC59"), 
+                    name="Score") +
+  xlab("\nIndicator of Quality") + 
+  ylab("Number of documents\n")
+
+```
+
+```{r}
+library(ggplot2)
+
+religion_long <- religion_primary %>% tidyr::pivot_longer(cols = c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>% 
+  dplyr::mutate(value = as.character(value)) %>%
+  dplyr::mutate(value = ifelse(is.na(value), "NA", value)) %>% 
+  dplyr::mutate(value = factor(value, levels=c("NA", "1", "2", "3"))) %>% 
+  dplyr::mutate(name = factor(name, levels=c("explanatory_actionability", "explanatory_proximity", "explained_relevance", "data_transparency", "explanatory_power", "program_discussion", "research_discussion", "reproducibility", "ethical_considerations"))) %>% 
+  dplyr::mutate(name = dplyr::recode(name, 
+                "explanatory_actionability" = "Explanatory Variable\nActionability",
+                "explanatory_proximity" = "Explanatory Variable\nProximity", 
+                "explained_relevance" = "Explained Variable\nRelevance", 
+                "data_transparency" = "Data Transparency", 
+                "explanatory_power" = "Explanatory Power", 
+                "program_discussion" = "Program Discussion", 
+                "research_discussion" = "Research\nDiscussion", 
+                "reproducibility" = "Reproducibility", 
+                "ethical_considerations" = "Ethical\nConsiderations")) 
+
+ggplot(religion_long, aes(x = name, fill = value)) +
+  geom_bar() +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5)) +
+  scale_fill_manual(values = c("#999999", "#F8766D", "#FFCC33", "#00BC59"), 
+                    name="Score") +
+  xlab("\nIndicator of Quality") + 
+  ylab("Number of documents\n")
+
+```
+
+
+```{r}
+library(ggplot2)
+
+community_long <- community_primary %>% tidyr::pivot_longer(cols = c(explanatory_actionability, explanatory_proximity, explained_relevance, data_transparency, explanatory_power, program_discussion, research_discussion, reproducibility, ethical_considerations)) %>% 
+  dplyr::mutate(value = as.character(value)) %>%
+  dplyr::mutate(value = ifelse(is.na(value), "NA", value)) %>% 
+  dplyr::mutate(value = factor(value, levels=c("NA", "1", "2", "3"))) %>% 
+  dplyr::mutate(name = factor(name, levels=c("explanatory_actionability", "explanatory_proximity", "explained_relevance", "data_transparency", "explanatory_power", "program_discussion", "research_discussion", "reproducibility", "ethical_considerations"))) %>% 
+  dplyr::mutate(name = dplyr::recode(name, 
+                "explanatory_actionability" = "Explanatory Variable\nActionability",
+                "explanatory_proximity" = "Explanatory Variable\nProximity", 
+                "explained_relevance" = "Explained Variable\nRelevance", 
+                "data_transparency" = "Data Transparency", 
+                "explanatory_power" = "Explanatory Power", 
+                "program_discussion" = "Program Discussion", 
+                "research_discussion" = "Research\nDiscussion", 
+                "reproducibility" = "Reproducibility", 
+                "ethical_considerations" = "Ethical\nConsiderations")) 
+
+ggplot(community_long, aes(x = name, fill = value)) +
+  geom_bar() +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5)) +
+  scale_fill_manual(values = c("#999999", "#F8766D", "#FFCC33", "#00BC59"), 
+                    name="Score") +
+  xlab("\nIndicator of Quality") + 
+  ylab("Number of documents\n")
+
+```
+
+
+
+
+```{r}
+library(ggplot2)
+
+youth_type_timecount <- datasheet_youth %>% dplyr::count(year, type) %>% 
+  dplyr::full_join(tidyr::expand_grid(type = unique(datasheet_youth$type), year = unique(datasheet_youth$year))) %>% 
+  dplyr::mutate(year=as.numeric(year)) %>% dplyr::filter(!(is.na(year)), !(is.na(type))) %>% dplyr::mutate(n = ifelse(is.na(n), 0, n))
+
+ggplot(youth_type_timecount, aes(x=year, y=n, fill=type)) + 
+    geom_area()
+
+```
+
+```{r}
+library(ggplot2)
+
+gender_type_timecount <- datasheet_gender %>% dplyr::count(year, type) %>% 
+  dplyr::full_join(tidyr::expand_grid(type = unique(datasheet_gender$type), year = unique(datasheet_gender$year))) %>% 
+  dplyr::mutate(year=as.numeric(year)) %>% dplyr::filter(!(is.na(year)), !(is.na(type))) %>% dplyr::mutate(n = ifelse(is.na(n), 0, n))
+
+ggplot(gender_type_timecount, aes(x=year, y=n, fill=type)) + 
+    geom_area()
+
+```
