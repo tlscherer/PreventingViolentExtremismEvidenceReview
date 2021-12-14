@@ -370,9 +370,28 @@ ggplot(community_long, aes(x = name, fill = value)) +
 ```
 
 
-
-
 ```{r}
+library(RColorBrewer)
+library(ggplot2)
+
+datasheet_all <- dplyr::bind_rows(datasheet_youth, datasheet_gender, datasheet_religion, datasheet_community) 
+
+all_type_timecount <- datasheet_all %>% dplyr::count(year, type) %>% 
+  dplyr::full_join(tidyr::expand_grid(type = unique(datasheet_all$type), year = unique(datasheet_all$year))) %>% 
+  dplyr::mutate(year=as.numeric(year)) %>% dplyr::filter(!(is.na(year)), !(is.na(type))) %>% dplyr::mutate(n = ifelse(is.na(n), 0, n))
+
+ggplot(all_type_timecount, aes(x=year, y=n, fill=type)) + 
+  geom_area() + 
+  scale_fill_brewer(palette = "Set1") + 
+  ylab("Number of documents\n") + 
+  theme(legend.position="right", 
+        legend.background = element_rect(colour = 'black', fill = 'white', linetype='solid'))
+
+```
+
+
+
+```{r eval=FALSE, include=FALSE}
 library(ggplot2)
 
 youth_type_timecount <- datasheet_youth %>% dplyr::count(year, type) %>% 
@@ -380,11 +399,11 @@ youth_type_timecount <- datasheet_youth %>% dplyr::count(year, type) %>%
   dplyr::mutate(year=as.numeric(year)) %>% dplyr::filter(!(is.na(year)), !(is.na(type))) %>% dplyr::mutate(n = ifelse(is.na(n), 0, n))
 
 ggplot(youth_type_timecount, aes(x=year, y=n, fill=type)) + 
-    geom_area()
+    geom_area() 
 
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 library(ggplot2)
 
 gender_type_timecount <- datasheet_gender %>% dplyr::count(year, type) %>% 
