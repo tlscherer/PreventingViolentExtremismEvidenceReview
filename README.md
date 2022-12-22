@@ -17,6 +17,6 @@ The Authors:
 
 ### Datasets
 
-  - [Literature Datasheet](https://github.com/tlscherer.github.io/PreventingViolentExtremismEvidenceReview/raw/master/data/literature_datasheet.xlsx)
-  - [Litertaure Codebook](https://docs.google.com/document/d/1veDsKMscq0yUXlpB9NHZInKJZIOSnzgqteJx5_8s4PE/edit)
+  - [Literature Datasheet](https://docs.google.com/spreadsheets/d/1QCnLUwvHdO8qGGpwNYCdU_2eycPX1PkUnuxRS8RGkbs/edit#gid=0)
+  - [Literature Codebook](https://docs.google.com/document/d/1veDsKMscq0yUXlpB9NHZInKJZIOSnzgqteJx5_8s4PE/edit)
 
