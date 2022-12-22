@@ -1,7 +1,6 @@
 # PreventingViolentExtremismEvidenceReview
 
-The Report: [Preventing Violent Extremism Evidence Review](
-https://docs.google.com/document/d/115g4djGLrBjJDZOux1TADgJnO-W44YiuUOuphtn0t_I/edit#)
+This is the Github repository for the U.S. Institute of Peace report "Preventing and Countering Violent Extremism."
 
 
 The Authors:
