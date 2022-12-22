@@ -6,9 +6,9 @@ https://docs.google.com/document/d/115g4djGLrBjJDZOux1TADgJnO-W44YiuUOuphtn0t_I/
 
 The Authors:
 
-  - [Dr. Laurent Van Metre]
-  - [Dr. Thomas Leo Scherer]
-  - [Analise Schmidt]
+  - Dr. Laurent Van Metre
+  - Dr. Thomas Leo Scherer
+  - Analise Schmidt
 
 ## Replication Code and Analysis
 
