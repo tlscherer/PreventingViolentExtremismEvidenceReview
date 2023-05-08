@@ -1,6 +1,6 @@
 # PreventingViolentExtremismEvidenceReview
 
-This is the Github repository for the U.S. Institute of Peace report "Preventing and Countering Violent Extremism."
+This is the Github repository for the U.S. Institute of Peace report [Preventing and Countering Violent Extremism: Assessing Missteps and Promising Community Approaches](https://www.usip.org/sites/default/files/Preventing-and-Countering-Violent-Extremism.pdf), released March 2023.
 
 
 The Authors:
